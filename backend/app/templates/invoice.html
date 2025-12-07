@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Invoice</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 20px; color: #333; }
+        .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .company-info h1 { margin: 0; font-size: 24px; color: #2c3e50; }
+        .invoice-details { text-align: right; }
+        .invoice-details h2 { margin: 0; font-size: 20px; color: #7f8c8d; }
+        .client-info { margin-bottom: 40px; }
+        .client-info h3 { margin: 0 0 10px 0; font-size: 16px; color: #7f8c8d; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background-color: #f8f9fa; color: #2c3e50; font-weight: bold; }
+        .totals { float: right; width: 300px; }
+        .row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .total-row { font-weight: bold; font-size: 18px; border-top: 2px solid #333; padding-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            <h1>{{ user.company_name or "My Company" }}</h1>
+            <p>{{ user.email }}</p>
+        </div>
+        <div class="invoice-details">
+            <h2>INVOICE</h2>
+            <p># {{ invoice.invoice_number }}</p>
+            <p>Date: {{ invoice.date.strftime('%Y-%m-%d') }}</p>
+            {% if invoice.due_date %}
+            <p>Due Date: {{ invoice.due_date.strftime('%Y-%m-%d') }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="client-info">
+        <h3>Bill To:</h3>
+        <p><strong>{{ invoice.client_name }}</strong></p>
+        {% if invoice.client_email %}
+        <p>{{ invoice.client_email }}</p>
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th style="text-align: right">Qty</th>
+                <th style="text-align: right">Price</th>
+                <th style="text-align: right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.content.get('items', []) %}
+            <tr>
+                <td>{{ item.description }}</td>
+                <td style="text-align: right">{{ item.quantity }}</td>
+                <td style="text-align: right">{{ "%.2f"|format(item.unit_price) }}</td>
+                <td style="text-align: right">{{ "%.2f"|format(item.quantity * item.unit_price) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="totals">
+        <div class="row">
+            <span>Subtotal:</span>
+            <span>{{ "%.2f"|format(invoice.total_amount) }}</span>
+        </div>
+        <div class="row total-row">
+            <span>Total:</span>
+            <span>{{ "%.2f"|format(invoice.total_amount) }}</span>
+        </div>
+    </div>
+</body>
+</html>

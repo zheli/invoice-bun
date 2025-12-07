@@ -1,0 +1,5 @@
+# environment config files
+.env
+
+# Python related files
+*.pyc
