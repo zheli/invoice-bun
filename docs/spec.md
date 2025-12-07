@@ -98,6 +98,13 @@ A modern web application for generating and managing professional invoices with 
 
 ### 5. Analytics & Reporting
 
+**User Activity Tracking:**
+- **Google Analytics Integration:**
+  - Track website traffic and user behavior
+  - Measure user engagement with key features
+  - Event tracking for specific actions (e.g., "Invoice Created", "Email Sent")
+  - Compliance with privacy regulations (cookie consent, anonymization)
+
 **Analytics Dashboard:**
 - Revenue tracking over time
 - Invoice status breakdown (draft vs. final, paid vs. unpaid)
@@ -110,6 +117,36 @@ A modern web application for generating and managing professional invoices with 
 **Export Capabilities:**
 - Export invoice data for accounting purposes
 - Generate summary reports
+
+### 6. Subscription & Payments
+
+**Payment Infrastructure:**
+- Integration with modern payment processing (e.g., Stripe)
+- Support for recurring subscriptions and one-time payments
+- Secure customer portal for billing management
+
+**Paid Features & Limits:**
+- **Tiered Plans:**
+  - Free Tier: Usage limits (e.g., maximum number of invoices per month)
+  - Pro Tier: Unlimited access and premium features
+- **Enforcement:**
+  - System checks for plan limits before performing actions
+  - UI indicators for premium-only features
+  - Automated upgrades/downgrades handling
+
+### 7. System Administration
+
+**Admin Role:**
+- Special "Admin" user type with system-wide privileges
+- Secured admin dashboard separated from the main user interface
+
+**User Management:**
+- **Overview:** View all registered users/companies with status and plan details
+- **Actions:**
+  - Enable or disable (ban) user accounts
+  - Initiate password reset process for users
+  - Manage user subscription status manually
+- **Monitoring:** View aggregate system stats (total users, total invoices, server health)
 
 ## Security Requirements
 
@@ -205,3 +242,6 @@ The implementation should include:
 - Backups can be created manually and automatically to S3
 - All data is properly isolated between users
 - Security best practices are implemented throughout
+- Admin users can manage user accounts and system status
+- Subscription payments and plan limits are correctly handled
+- User activity is tracked via Google Analytics
