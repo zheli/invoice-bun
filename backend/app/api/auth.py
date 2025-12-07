@@ -1,6 +1,6 @@
 from datetime import timedelta
 from typing import Any
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -48,7 +48,7 @@ async def google_login():
     return await google_sso.get_login_redirect()
 
 @router.get("/auth/google/callback")
-async def google_callback(request: deps.Request, session: AsyncSession = Depends(get_session)):
+async def google_callback(request: Request, session: AsyncSession = Depends(get_session)):
     try:
         user_info = await google_sso.verify_and_process(request)
     except Exception as e:

@@ -1,6 +1,6 @@
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from weasyprint import HTML
+
 from app.models import Invoice, User
 
 TEMPLATE_DIR = Path(__file__).parent.parent / "templates"
@@ -12,4 +12,5 @@ env = Environment(
 def generate_pdf(invoice: Invoice, user: User) -> bytes:
     template = env.get_template("invoice.html")
     html_content = template.render(invoice=invoice, user=user)
+    from weasyprint import HTML
     return HTML(string=html_content).write_pdf()

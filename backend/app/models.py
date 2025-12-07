@@ -19,6 +19,16 @@ class User(UserBase, table=True):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, primary_key=True)
     invoices: List["Invoice"] = Relationship(back_populates="user")
 
+class Token(SQLModel):
+    access_token: str
+    token_type: str
+
+class UserCreate(SQLModel):
+    email: str
+    password: str
+    full_name: Optional[str] = None
+    company_name: Optional[str] = None
+
 from sqlalchemy import JSON, Column
 
 class InvoiceBase(SQLModel):
