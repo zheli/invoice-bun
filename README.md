@@ -20,6 +20,16 @@ A modern web application for generating and managing professional invoices with 
     ```
 4.  Access the app at `http://localhost:5173`.
 
+### Google OAuth Setup
+
+To enable Google Login, you need to configure a project in the Google Cloud Console:
+
+1.  Create a project and configure the OAuth consent screen.
+2.  Create OAuth 2.0 Client credentials (Web application).
+3.  Add the following **Authorized redirect URI**:
+    - `http://localhost:8006/auth/google/callback`
+4.  Copy the Client ID and Client Secret into your `backend/.env` file.
+
 ### Local Development
 
 #### Backend
