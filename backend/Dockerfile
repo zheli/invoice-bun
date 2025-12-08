@@ -19,5 +19,6 @@ RUN uv sync --frozen --no-install-project
 
 # Copy application
 COPY app ./app
+COPY server.py .
 
-CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uv", "run", "python", "server.py"]

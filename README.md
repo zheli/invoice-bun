@@ -16,7 +16,11 @@ A modern web application for generating and managing professional invoices with 
 2.  Create `.env` files for backend and frontend (see `.env.example`).
 3.  Run:
     ```bash
+    # Default port 8000
     docker-compose up --build
+
+    # Custom port
+    PORT=9000 docker-compose up --build
     ```
 4.  Access the app at `http://localhost:5173`.
 
@@ -27,7 +31,7 @@ To enable Google Login, you need to configure a project in the Google Cloud Cons
 1.  Create a project and configure the OAuth consent screen.
 2.  Create OAuth 2.0 Client credentials (Web application).
 3.  Add the following **Authorized redirect URI**:
-    - `http://localhost:8006/auth/google/callback`
+    - `http://localhost:8000/auth/google/callback` (or your configured PORT)
 4.  Copy the Client ID and Client Secret into your `backend/.env` file.
 
 ### Local Development
@@ -36,7 +40,10 @@ To enable Google Login, you need to configure a project in the Google Cloud Cons
 ```bash
 cd backend
 uv sync
-uv run uvicorn app.main:app --reload --port 8006
+# Default port 8000
+uv run python server.py
+# Custom port
+PORT=9000 uv run python server.py
 ```
 
 #### Frontend

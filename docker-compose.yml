@@ -4,10 +4,11 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:${PORT:-8000}"
     volumes:
       - ./backend:/app
     environment:
+      - PORT=${PORT:-8000}
       - DATABASE_URL=postgresql+asyncpg://user:password@db:5432/invoice_db
     depends_on:
       - db
@@ -22,7 +23,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - VITE_API_URL=http://localhost:${PORT:-8000}
 
   db:
     image: postgres:15-alpine
