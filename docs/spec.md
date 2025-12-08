@@ -214,6 +214,18 @@ A modern web application for generating and managing professional invoices with 
 - Clean, maintainable code structure
 - Comprehensive logging
 
+## Testing Principles
+
+### General Guidelines
+- **Isolation:** Tests must be isolated from external services. No network calls to 3rd party APIs (e.g., Google, Stripe) should be made during testing.
+- **Mocking:** Use mocking for all external dependencies.
+- **Coverage:** Aim for high test coverage, particularly for critical paths like authentication and billing.
+
+### Issues to Avoid
+- **Flaky Tests:** Avoid relying on time.sleep() or external state that can change.
+- **External Dependencies:** DO NOT contact real external servers (Google, AWS S3, etc.) in tests. This slows down tests and introduces points of failure.
+- **Data Pollution:** Ensure tests clean up after themselves or use transaction rollbacks.
+
 ## Deliverables
 
 The implementation should include:
