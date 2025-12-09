@@ -51,7 +51,7 @@ async def client(session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 @pytest.fixture(autouse=True)
 def mock_google_sso(monkeypatch: pytest.MonkeyPatch):
     class MockGoogleSSO:
-        def __init__(self, **kwargs: object):  # pyright: ignore[reportUnusedParameter]
+        def __init__(self, **kwargs: object):
             pass
 
         async def __aenter__(self):
