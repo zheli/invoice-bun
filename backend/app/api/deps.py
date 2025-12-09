@@ -1,4 +1,3 @@
-from typing import Generator, Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
@@ -10,22 +9,20 @@ from app.models import User
 from app.security import ALGORITHM
 from sqlmodel import select
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl="/auth/access-token"
-)
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/auth/access-token")
+
 
 class TokenPayload(BaseModel):
-    sub: Optional[str] = None
+    sub: str | None = None
+
 
 async def get_current_user(
-    session: AsyncSession = Depends(get_session),
-    token: str = Depends(reusable_oauth2)
+    session: AsyncSession = Depends(get_session),  # pyright: ignore[reportCallInDefaultInitializer]
+    token: str = Depends(reusable_oauth2),  # pyright: ignore[reportCallInDefaultInitializer]
 ) -> User:
     try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[ALGORITHM]
-        )
-        token_data = TokenPayload(**payload)
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        token_data = TokenPayload(**payload)  # pyright: ignore[reportAny]
     except (JWTError, Exception):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
