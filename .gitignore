@@ -5,8 +5,3 @@
 
 # environment config files
 .env
-
-# Python related files
-.venv/
-__pycache__
-*.pyc
