@@ -15,6 +15,16 @@ import uuid
 router = APIRouter()
 
 
+def _create_google_sso() -> GoogleSSO:
+    """Create a GoogleSSO instance with the configured settings."""
+    return GoogleSSO(
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
+        redirect_uri=settings.GOOGLE_REDIRECT_URI,
+        allow_insecure_http=True,  # For local dev
+    )
+
+
 @router.post("/auth/access-token", response_model=Token)
 async def login_access_token(
     session: AsyncSession = Depends(get_session),  # pyright: ignore[reportCallInDefaultInitializer]
@@ -41,12 +51,7 @@ async def login_access_token(
 
 @router.get("/auth/google/login")
 async def google_login():
-    async with GoogleSSO(
-        client_id=settings.GOOGLE_CLIENT_ID,
-        client_secret=settings.GOOGLE_CLIENT_SECRET,
-        redirect_uri=settings.GOOGLE_REDIRECT_URI,
-        allow_insecure_http=True,  # For local dev
-    ) as google_sso:
+    async with _create_google_sso() as google_sso:
         return await google_sso.get_login_redirect()
 
 
@@ -55,12 +60,7 @@ async def google_callback(
     request: Request,
     session: AsyncSession = Depends(get_session),  # pyright: ignore[reportCallInDefaultInitializer]
 ):
-    async with GoogleSSO(
-        client_id=settings.GOOGLE_CLIENT_ID,
-        client_secret=settings.GOOGLE_CLIENT_SECRET,
-        redirect_uri=settings.GOOGLE_REDIRECT_URI,
-        allow_insecure_http=True,  # For local dev
-    ) as google_sso:
+    async with _create_google_sso() as google_sso:
         try:
             user_info = await google_sso.verify_and_process(request)
         except Exception as e:
