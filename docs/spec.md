@@ -8,7 +8,6 @@ A modern web application for generating and managing professional invoices with 
 
 ### Package Management
 - Use **uv** for Python package management. 
-- Make sure to use virtual environment so that the installed packages are isolated from the system.
 - Use lock file to ensure the dependencies are the same across all environments.
 
 ### Backend Framework
