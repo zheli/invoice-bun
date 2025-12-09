@@ -279,3 +279,10 @@ Always use modern Python practices appropriate for Python >=3.11.
 - DO NOT implement additional code for backward compatiblity (such as extra methods or
   variable aliases or comments about backward compatibility) UNLESS the user has
   confirmed that it is necessary.
+
+# JavaScript/TypeScript Coding Guidelines
+
+## Node.js Version
+
+Write for Node.js >=22. Do NOT write code to support earlier versions of Node.js.
+Always use modern JavaScript practices appropriate for Node.js >=22.
