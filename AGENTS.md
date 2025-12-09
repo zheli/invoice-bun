@@ -129,7 +129,7 @@ Always use modern Python practices appropriate for Python >=3.11.
   ```python
   class Link(BaseModel):
     url: str
-    title: str = None
+    title: str | None = None
   
   # DO NOT write tests like this. They are trivial and only create clutter!
   def test_link_model():
@@ -286,3 +286,12 @@ Always use modern Python practices appropriate for Python >=3.11.
 
 Write for Node.js >=22. Do NOT write code to support earlier versions of Node.js.
 Always use modern JavaScript practices appropriate for Node.js >=22.
+
+## Verification Sessions (Added Dec 9, 2025)
+
+When verifying full-stack features, follow this approach:
+
+1.  **Simulate User Behavior**: Use the `browser_subagent` to perform end-to-end flows (e.g., Registration, Login) as a real user would. Identifying frontend glitches (like redirects that don't happen) is much easier than with pure API testing.
+2.  **Monitor Server Logs**: While the browser agent works, tail the backend logs (e.g., `docker-compose logs --tail=50 -f backend`). This reveals hidden 500 errors or rejected requests (like CORS issues) that the frontend might mask with generic error messages.
+3.  **Cross-Origin Considerations**: Remember that in specific development setups (like separate Vite and Uvicorn servers), CORS is essential. Check for `405 Method Not Allowed` on `OPTIONS` requests as a smoking gun for missing CORS headers.
+4.  **Iterative Fixes**: Correct the backend configuration based on log findings, then immediately re-run the browser agent to verify the fix.
