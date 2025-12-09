@@ -51,6 +51,15 @@ async def client(session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 @pytest.fixture(autouse=True)
 def mock_google_sso(monkeypatch: pytest.MonkeyPatch):
     class MockGoogleSSO:
+        def __init__(self, **kwargs: object):  # pyright: ignore[reportUnusedParameter]
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, exc_type: object, exc_val: object, exc_tb: object):
+            pass
+
         async def get_login_redirect(self, **kwargs: object):  # pyright: ignore[reportUnusedParameter]
             return RedirectResponse(
                 url="http://accounts.google.com/o/oauth2/auth", status_code=302
@@ -71,4 +80,4 @@ def mock_google_sso(monkeypatch: pytest.MonkeyPatch):
 
             return UserInfo()
 
-    monkeypatch.setattr("app.api.auth.google_sso", MockGoogleSSO())
+    monkeypatch.setattr("app.api.auth.GoogleSSO", MockGoogleSSO)

@@ -14,13 +14,6 @@ import uuid
 
 router = APIRouter()
 
-google_sso = GoogleSSO(
-    client_id=settings.GOOGLE_CLIENT_ID,
-    client_secret=settings.GOOGLE_CLIENT_SECRET,
-    redirect_uri=settings.GOOGLE_REDIRECT_URI,
-    allow_insecure_http=True,  # For local dev
-)
-
 
 @router.post("/auth/access-token", response_model=Token)
 async def login_access_token(
@@ -48,7 +41,13 @@ async def login_access_token(
 
 @router.get("/auth/google/login")
 async def google_login():
-    return await google_sso.get_login_redirect()
+    async with GoogleSSO(
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
+        redirect_uri=settings.GOOGLE_REDIRECT_URI,
+        allow_insecure_http=True,  # For local dev
+    ) as google_sso:
+        return await google_sso.get_login_redirect()
 
 
 @router.get("/auth/google/callback")
@@ -56,48 +55,58 @@ async def google_callback(
     request: Request,
     session: AsyncSession = Depends(get_session),  # pyright: ignore[reportCallInDefaultInitializer]
 ):
-    try:
-        user_info = await google_sso.verify_and_process(request)
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    async with GoogleSSO(
+        client_id=settings.GOOGLE_CLIENT_ID,
+        client_secret=settings.GOOGLE_CLIENT_SECRET,
+        redirect_uri=settings.GOOGLE_REDIRECT_URI,
+        allow_insecure_http=True,  # For local dev
+    ) as google_sso:
+        try:
+            user_info = await google_sso.verify_and_process(request)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
 
-    if not user_info or not user_info.email:
-        raise HTTPException(status_code=400, detail="No email returned from Google")
+        if not user_info or not user_info.email:
+            raise HTTPException(status_code=400, detail="No email returned from Google")
 
-    # Check if user exists
-    user_result = await session.execute(
-        select(User).where(User.email == user_info.email)
-    )
-    user = user_result.scalars().first()
-
-    if not user:
-        if not user_info.id:
-            raise HTTPException(status_code=400, detail="No ID returned from Google")
-        # Register new user
-        password = str(uuid.uuid4())  # Random password
-        user = User(
-            email=user_info.email,
-            full_name=user_info.display_name,
-            hashed_password=get_password_hash(password),
-            provider="google",
-            provider_id=user_info.id,
-            is_active=True,
+        # Check if user exists
+        user_result = await session.execute(
+            select(User).where(User.email == user_info.email)
         )
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
-    else:
-        # Link if not linked? Or just login.
-        # Ideally we should check if provider matches or handle merging.
-        # For now, just logging in is fine as email is trusted.
-        pass
+        user = user_result.scalars().first()
 
-    if not user.id:
-        raise HTTPException(status_code=500, detail="User ID missing")
+        if not user:
+            if not user_info.id:
+                raise HTTPException(
+                    status_code=400, detail="No ID returned from Google"
+                )
+            # Register new user
+            password = str(uuid.uuid4())  # Random password
+            user = User(
+                email=user_info.email,
+                full_name=user_info.display_name,
+                hashed_password=get_password_hash(password),
+                provider="google",
+                provider_id=user_info.id,
+                is_active=True,
+            )
+            session.add(user)
+            await session.commit()
+            await session.refresh(user)
+        else:
+            # Link if not linked? Or just login.
+            # Ideally we should check if provider matches or handle merging.
+            # For now, just logging in is fine as email is trusted.
+            pass
 
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    token = create_access_token(str(user.id), expires_delta=access_token_expires)
+        if not user.id:
+            raise HTTPException(status_code=500, detail="User ID missing")
 
-    # Redirect to frontend with token
-    # Assuming frontend is on 5173
-    return RedirectResponse(url=f"http://localhost:5173/auth/callback?token={token}")
+        access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        token = create_access_token(str(user.id), expires_delta=access_token_expires)
+
+        # Redirect to frontend with token
+        # Assuming frontend is on 5173
+        return RedirectResponse(
+            url=f"http://localhost:5173/auth/callback?token={token}"
+        )
