@@ -9,6 +9,6 @@ lint:
 	uv run basedpyright .
 
 test:
-	uv run pytest
+	uv sync --extra test && uv run pytest
 
 all: install lint test
